@@ -8,6 +8,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.raku.dto.ResponseDto;
 import org.raku.dto.UserDetailsDto;
 import org.raku.model.User;
 import org.raku.service.UserService;
@@ -22,9 +23,12 @@ public class UsersController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response userRegistration(@Valid UserDetailsDto userDetails){
-
-        User user = userService.userRegistartion(userDetails);
-
-        return Response.ok(user).build();
+        ResponseDto responseDto = userService.userRegistartion(userDetails);
+        return Response.ok(responseDto).build();
     }
+
+//    @POST
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    @Produces(MediaType.APPLICATION_JSON)
+//    public Response userLogin(@Valid )
 }
