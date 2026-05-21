@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserDetailsDto {
 
-    @NotBlank(message = "User name is required")
     private String userName;
 
     @Email(message = "Invalid email format")
@@ -26,7 +25,7 @@ public class UserDetailsDto {
     )
     private String password;
 
-    @NotBlank(message = "Mobile Number is required")
+
     @Pattern(
             regexp = "^[0-9]{10}$",
             message = "Mobile number must contain exactly 10 digits"

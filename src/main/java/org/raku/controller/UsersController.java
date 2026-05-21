@@ -27,8 +27,12 @@ public class UsersController {
         return Response.ok(responseDto).build();
     }
 
-//    @POST
-//    @Consumes(MediaType.APPLICATION_JSON)
-//    @Produces(MediaType.APPLICATION_JSON)
-//    public Response userLogin(@Valid )
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/login")
+    public Response userLogin(@Valid UserDetailsDto userDetails){
+        ResponseDto responseDto = userService.userLogin(userDetails);
+        return Response.ok(responseDto).build();
+    }
 }
