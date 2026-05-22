@@ -2,6 +2,8 @@ package org.raku.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,7 +20,6 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
-
     private String userName;
 
     @Column(nullable = false)
@@ -28,6 +29,13 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-
     private String mobileNum;
+
+    @NotBlank(message = "Role is required")
+    @Pattern(
+            regexp = "(?i)^(ADMIN|CUSTOMER)$",
+            message = "Role must be ADMIN or CUSTOMER"
+    )
+    @Column(nullable = false)
+    private String role;
 }

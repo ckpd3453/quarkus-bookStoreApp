@@ -4,11 +4,11 @@ import io.quarkus.elytron.security.common.BcryptUtil;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import jakarta.ws.rs.core.Response;
 import org.raku.dto.ResponseDto;
 import org.raku.dto.UserDetailsDto;
 import org.raku.model.User;
 import org.raku.repository.UserRepository;
+import org.raku.utility.JwtService;
 
 import java.time.LocalDateTime;
 
@@ -18,6 +18,9 @@ public class UserService {
     @Inject
     UserRepository userRepo;
 
+    @Inject
+    JwtService jwtService;
+
     @Transactional
     public ResponseDto userRegistartion(UserDetailsDto userDetails) {
 
@@ -26,7 +29,7 @@ public class UserService {
         if (emailOrMobileNum != null) {
             return ResponseDto.builder()
                     .timestamp(LocalDateTime.now())
-                    .status(Response.Status.BAD_REQUEST)
+                    .status(jakarta.ws.rs.core.Response.Status.BAD_REQUEST)
                     .error("User Already Registered with this email or mobile number")
                     .data(emailOrMobileNum.getEmail())
                     .build();
@@ -38,13 +41,14 @@ public class UserService {
                 .email(userDetails.getEmail())
                 .password(encrytedPassword)
                 .mobileNum(userDetails.getMobileNum())
+                .role(userDetails.getRole())
                 .build();
 
         userRepo.persist(user);
 
         return ResponseDto.builder()
                 .timestamp(LocalDateTime.now())
-                .status(Response.Status.CREATED)
+                .status(jakarta.ws.rs.core.Response.Status.CREATED)
                 .data(user)
                 .message("User Registered Successfully!")
                 .build();
@@ -57,22 +61,27 @@ public class UserService {
         if (repoUser == null) {
             return ResponseDto.builder()
                     .timestamp(LocalDateTime.now())
-                    .status(Response.Status.BAD_REQUEST)
+                    .status(jakarta.ws.rs.core.Response.Status.BAD_REQUEST)
                     .error("User Not Found/Unregistered")
                     .data(repoUser)
                     .build();
         }
 
-        System.out.println("Repo Password : " + repoUser.getPassword());
         boolean matches = BcryptUtil.matches(userDetails.getPassword(), repoUser.getPassword());
 
-        return matches ? ResponseDto.builder()
+        if (matches) {
+
+            String token = jwtService.generateToken(repoUser.getEmail(), repoUser.getRole());
+
+            return ResponseDto.builder()
+                    .timestamp(LocalDateTime.now())
+                    .status(jakarta.ws.rs.core.Response.Status.ACCEPTED)
+                    .message("User Login Success as "+repoUser.getRole())
+                    .data(token).build();
+        }
+        return ResponseDto.builder()
                 .timestamp(LocalDateTime.now())
-                .status(Response.Status.ACCEPTED)
-                .message("User Login Success !").build() :
-                ResponseDto.builder()
-                        .timestamp(LocalDateTime.now())
-                        .status(Response.Status.BAD_REQUEST)
-                        .error("User Password is not correct").build();
+                .status(jakarta.ws.rs.core.Response.Status.BAD_REQUEST)
+                .error("User Password is not correct").build();
     }
 }

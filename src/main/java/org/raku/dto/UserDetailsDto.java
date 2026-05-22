@@ -32,4 +32,11 @@ public class UserDetailsDto {
     )
     private String mobileNum;
 
+
+    @Pattern(
+            regexp = "(?i)^(ADMIN|CUSTOMER)$",
+            message = "Role must be ADMIN or CUSTOMER"
+    )
+    private String role;
+
 }

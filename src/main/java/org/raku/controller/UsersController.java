@@ -10,10 +10,9 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.raku.dto.ResponseDto;
 import org.raku.dto.UserDetailsDto;
-import org.raku.model.User;
 import org.raku.service.UserService;
 
-@Path("bookstore")
+@Path("bookstore/user")
 public class UsersController {
 
     @Inject
