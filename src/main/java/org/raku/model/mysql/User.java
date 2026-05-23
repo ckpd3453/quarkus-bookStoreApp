@@ -1,4 +1,4 @@
-package org.raku.model;
+package org.raku.model.mysql;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;

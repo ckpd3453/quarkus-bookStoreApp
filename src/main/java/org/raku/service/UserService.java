@@ -6,7 +6,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.raku.dto.ResponseDto;
 import org.raku.dto.UserDetailsDto;
-import org.raku.model.User;
+import org.raku.model.mysql.User;
 import org.raku.repository.UserRepository;
 import org.raku.utility.JwtService;
 
@@ -21,12 +21,16 @@ public class UserService {
     @Inject
     JwtService jwtService;
 
+    @Inject
+    AuditLogService logService;
+
     @Transactional
     public ResponseDto userRegistartion(UserDetailsDto userDetails) {
 
         User emailOrMobileNum = userRepo.findByEmailOrMobileNum(userDetails.getEmail(), userDetails.getMobileNum());
 
         if (emailOrMobileNum != null) {
+            logService.saveAudit(userDetails.getUserName() +" User Already Registered with this email or mobile number");
             return ResponseDto.builder()
                     .timestamp(LocalDateTime.now())
                     .status(jakarta.ws.rs.core.Response.Status.BAD_REQUEST)
@@ -46,6 +50,7 @@ public class UserService {
 
         userRepo.persist(user);
 
+        logService.saveAudit(userDetails.getUserName() +" Registered Successfully!");
         return ResponseDto.builder()
                 .timestamp(LocalDateTime.now())
                 .status(jakarta.ws.rs.core.Response.Status.CREATED)
@@ -59,6 +64,8 @@ public class UserService {
         User repoUser = userRepo.findByEmailOrMobileNum(userDetails.getEmail(), null);
 
         if (repoUser == null) {
+
+            logService.saveAudit(userDetails.getEmail() +" Not Found/Unregistered");
             return ResponseDto.builder()
                     .timestamp(LocalDateTime.now())
                     .status(jakarta.ws.rs.core.Response.Status.BAD_REQUEST)
@@ -73,12 +80,14 @@ public class UserService {
 
             String token = jwtService.generateToken(repoUser.getEmail(), repoUser.getRole());
 
+            logService.saveAudit(userDetails.getEmail()+" Login Success as "+repoUser.getRole());
             return ResponseDto.builder()
                     .timestamp(LocalDateTime.now())
                     .status(jakarta.ws.rs.core.Response.Status.ACCEPTED)
                     .message("User Login Success as "+repoUser.getRole())
                     .data(token).build();
         }
+        logService.saveAudit(userDetails.getEmail()+ ", your Password is not correct");
         return ResponseDto.builder()
                 .timestamp(LocalDateTime.now())
                 .status(jakarta.ws.rs.core.Response.Status.BAD_REQUEST)

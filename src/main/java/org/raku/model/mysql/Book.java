@@ -1,4 +1,4 @@
-package org.raku.model;
+package org.raku.model.mysql;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;

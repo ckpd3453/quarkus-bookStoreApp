@@ -2,8 +2,7 @@ package org.raku.repository;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.validation.constraints.Email;
-import org.raku.model.User;
+import org.raku.model.mysql.User;
 
 @ApplicationScoped
 public class UserRepository implements PanacheRepository<User> {

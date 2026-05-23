@@ -6,7 +6,7 @@ import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
 import org.raku.dto.BookDto;
 import org.raku.dto.ResponseDto;
-import org.raku.model.Book;
+import org.raku.model.mysql.Book;
 import org.raku.repository.BookRepository;
 
 import java.time.LocalDateTime;
@@ -17,6 +17,9 @@ public class BookService {
 
     @Inject
     BookRepository bookRepository;
+
+    @Inject
+    AuditLogService auditLogService;
 
     @Transactional
     public ResponseDto addBook(BookDto bookDetails) {
@@ -36,6 +39,7 @@ public class BookService {
                     existingBook.getStock() + bookDetails.getStock()
             );
 
+            auditLogService.saveAudit(bookDetails.getTitle()+" already exists. Stock updated successfully.");
             return ResponseDto.builder()
                     .timestamp(LocalDateTime.now())
                     .status(Response.Status.OK)
@@ -55,6 +59,7 @@ public class BookService {
 
         bookRepository.persist(book);
 
+        auditLogService.saveAudit(bookDetails.getTitle()+" added successfully.");
         return ResponseDto.builder()
                 .timestamp(LocalDateTime.now())
                 .status(Response.Status.CREATED)
@@ -75,6 +80,7 @@ public class BookService {
 
         List<Book> list = bookRepository.findAll().list();
 
+        auditLogService.saveAudit("Books fetched Successfully!");
         return ResponseDto.builder()
                 .timestamp(LocalDateTime.now())
                 .status(Response.Status.OK)
