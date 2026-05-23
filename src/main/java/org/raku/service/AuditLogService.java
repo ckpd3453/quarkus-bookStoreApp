@@ -17,7 +17,7 @@ public class AuditLogService {
     @Inject
     AuditLogRepository auditLogRepository;
 
-    @Transactional
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
     public void saveAudit(String action) {
 
         AuditLog log = new AuditLog();
