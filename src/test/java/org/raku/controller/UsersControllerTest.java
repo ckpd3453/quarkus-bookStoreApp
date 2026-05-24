@@ -27,7 +27,7 @@ public class UsersControllerTest {
     UserService userService;
 
     @Test
-    void testForUserRegistration(){
+    void testForUserRegistration() {
         UserDetailsDto user = UserDetailsDto.builder()
                 .userName("Chandrakant")
                 .email("chandrakantprasad68@gmail.com")
@@ -47,22 +47,47 @@ public class UsersControllerTest {
         when(userService.userRegistartion(Mockito.any())).thenReturn(responseDto);
 
         var response = usersController.userRegistration(user);
+
         assertEquals(200, response.getStatus());
+
+        ResponseDto actualResponsse = (ResponseDto) response.getEntity();
+
+        assertEquals("User Registered Successfully!", actualResponsse.getMessage());
+        assertEquals(responseDto, actualResponsse);
     }
 
-//    @Test
-//    void testForUserLogin(){
-//
-//        UserDetailsDto request = UserDetailsDto.builder()
-//                .email("chandrakantprasad68@gmail.com")
-//                .password("Password@123")
-//                .role("Admin")
-//                .build();
-//
-//        ResponseDto.builder()
-//                .timestamp(LocalDateTime.now())
-//                .status(jakarta.ws.rs.core.Response.Status.ACCEPTED)
-//                .message("User Login Success as Admin")
-//                .data(token).build();
-//    }
+    @Test
+    void testForUserLogin() {
+
+        UserDetailsDto request = UserDetailsDto.builder()
+                .email("chandrakantprasad68@gmail.com")
+                .password("Password@123")
+                .role("Admin")
+                .build();
+
+        String token = "dummy-jwt-token";
+
+        ResponseDto<Object> responseDto = ResponseDto.builder()
+                .timestamp(LocalDateTime.now())
+                .status(Response.Status.ACCEPTED)
+                .message("User Login Success as Admin")
+                .data(token)
+                .build();
+
+        when(userService.userLogin(Mockito.any()))
+                .thenReturn(responseDto);
+
+        var response = usersController.userLogin(request);
+
+        assertEquals(200, response.getStatus());
+
+        ResponseDto actualResponse =
+                (ResponseDto) response.getEntity();
+
+        assertEquals("User Login Success as Admin",
+                actualResponse.getMessage());
+
+        assertEquals(token,
+                actualResponse.getData());
+    }
 }

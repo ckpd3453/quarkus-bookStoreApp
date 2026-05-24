@@ -20,12 +20,20 @@ public class UsersControllerIT {
                 }
                 """;
 
-        given()
-                .contentType("application/json")
-                .body(body)
-                .when()
-                .post("/bookstore/user")
-                .then()
-                .statusCode(200);
+        given().contentType("application/json").body(body).when().post("/bookstore/user").then().statusCode(200);
+    }
+
+
+    @Test
+    void testUserLogin() {
+
+        String body = """
+                {
+                 "email": "chand@test.com",
+                 "password": "Password@123"
+                }
+                """;
+
+        given().contentType("application/json").body(body).when().post("/bookstore/user/login").then().statusCode(200);
     }
 }
